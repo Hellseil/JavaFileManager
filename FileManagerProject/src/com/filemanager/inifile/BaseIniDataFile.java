@@ -1,5 +1,6 @@
 package com.filemanager.inifile;
 import java.io.File;
+import java.lang.reflect.Field;
 
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
@@ -40,6 +41,20 @@ public abstract class BaseIniDataFile extends BaseDataFile {
 			this.lastException=e;
 		}
 		
+	}
+	protected String getKeyName(String fieldName) throws NoSuchFieldException {
+		String ret="";
+		try {
+	        Field field = this.getClass().getDeclaredField(fieldName);
+	        if (field.isAnnotationPresent(KeyNameAnnotation.class)) {
+	        	KeyNameAnnotation annotation = field.getAnnotation(KeyNameAnnotation.class);
+	            ret=annotation.value();
+	        }
+	   } catch (NoSuchFieldException e) {
+	       	this.lastException=e;
+	       	throw e;
+	   }
+		return ret;
 	}
 	// <editor-fold desc=" WriteMethod">
     protected boolean writeData(String section,String key,String value) {

@@ -1,6 +1,7 @@
 package com.tester;
 
 import com.filemanager.inifile.BaseIniDataFile;
+import com.filemanager.inifile.KeyNameAnnotation;
 
 public class TestIni extends BaseIniDataFile{
 	public TestIni(String filePath)
@@ -11,7 +12,9 @@ public class TestIni extends BaseIniDataFile{
 		TEST1,
 		TEST2,
 	}
+	@KeyNameAnnotation(value="strdata")
 	private String strData="TESTSTR";
+	@KeyNameAnnotation(value="intdata")
 	private int intData=2;
 	private TestEnum testEnum=TestEnum.TEST1;
 	public int getIntData()
@@ -25,18 +28,29 @@ public class TestIni extends BaseIniDataFile{
 	@Override
 	public boolean Save() {
 		String section="test";
-		this.writeData(section, "intdata", intData);
-		this.writeData(section, "strdata", strData);
-		this.writeData(section, "testenum", testEnum);
+		try
+		{
+			this.writeData(section,this.getKeyName("intData"), intData);
+			this.writeData(section, "strdata", strData);
+			this.writeData(section, "testenum", testEnum);
+		}
+		catch(Exception e){
+			this.lastException=e;
+		}
 		return true;
 	}
 
 	@Override
 	public boolean Load() {
 		String section="test";
-		intData=this.readData(section, "intdata", intData);
-		strData=this.readData(section, "strdata", strData);
-		testEnum=this.readData(section, "testenum",TestEnum.class, testEnum);
+		try {
+			intData=this.readData(section,this.getKeyName("intData"), intData);
+			strData=this.readData(section, "strdata", strData);
+			testEnum=this.readData(section, "testenum",TestEnum.class, testEnum);
+		}
+		catch(Exception e){
+			this.lastException=e;
+		}
 		return true;
 	}
 	
